@@ -766,6 +766,14 @@ float Environment::get_fog_aerial_perspective() const {
 	return fog_aerial_perspective;
 }
 
+void Environment::set_fog_start(float p_distance) {
+	fog_start = p_distance;
+	_update_fog();
+}
+float Environment::get_fog_start() const {
+	return fog_start;
+}
+
 void Environment::_update_fog() {
 	RS::get_singleton()->environment_set_fog(
 			environment,
@@ -776,7 +784,8 @@ void Environment::_update_fog() {
 			fog_density,
 			fog_height,
 			fog_height_density,
-			fog_aerial_perspective);
+			fog_aerial_perspective,
+			fog_start);
 }
 
 // Volumetric Fog
@@ -1282,6 +1291,9 @@ void Environment::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_fog_aerial_perspective", "aerial_perspective"), &Environment::set_fog_aerial_perspective);
 	ClassDB::bind_method(D_METHOD("get_fog_aerial_perspective"), &Environment::get_fog_aerial_perspective);
 
+	ClassDB::bind_method(D_METHOD("set_fog_start", "distance"), &Environment::set_fog_start);
+	ClassDB::bind_method(D_METHOD("get_fog_start"), &Environment::get_fog_start);
+
 	ADD_GROUP("Fog", "fog_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "fog_enabled"), "set_fog_enabled", "is_fog_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "fog_light_color", PROPERTY_HINT_COLOR_NO_ALPHA), "set_fog_light_color", "get_fog_light_color");
@@ -1292,6 +1304,7 @@ void Environment::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_aerial_perspective", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_fog_aerial_perspective", "get_fog_aerial_perspective");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_height", PROPERTY_HINT_RANGE, "-1024,1024,0.01,or_lesser,or_greater"), "set_fog_height", "get_fog_height");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_height_density", PROPERTY_HINT_RANGE, "0,128,0.001,or_greater"), "set_fog_height_density", "get_fog_height_density");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "fog_start", PROPERTY_HINT_RANGE, "0,128,0.1,or_lesser,or_greater"), "set_fog_start", "get_fog_start");
 
 	ClassDB::bind_method(D_METHOD("set_volumetric_fog_enabled", "enabled"), &Environment::set_volumetric_fog_enabled);
 	ClassDB::bind_method(D_METHOD("is_volumetric_fog_enabled"), &Environment::is_volumetric_fog_enabled);

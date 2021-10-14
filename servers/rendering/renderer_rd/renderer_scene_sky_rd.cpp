@@ -1180,6 +1180,7 @@ void RendererSceneSkyRD::setup(RendererSceneEnvironmentRD *p_env, RID p_render_b
 	sky_scene_state.ubo.fog_enabled = p_env->fog_enabled;
 	sky_scene_state.ubo.fog_density = p_env->fog_density;
 	sky_scene_state.ubo.fog_aerial_perspective = p_env->fog_aerial_perspective;
+	sky_scene_state.ubo.fog_start = p_env->fog_start;
 	Color fog_color = p_env->fog_light_color.to_linear();
 	float fog_energy = p_env->fog_light_energy;
 	sky_scene_state.ubo.fog_light_color[0] = fog_color.r * fog_energy;

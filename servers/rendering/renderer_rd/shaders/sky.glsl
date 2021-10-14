@@ -86,7 +86,6 @@ layout(set = 0, binding = 2, std140) uniform SceneData {
 	bool volumetric_fog_enabled;
 	float volumetric_fog_inv_length;
 	float volumetric_fog_detail_spread;
-
 	float fog_aerial_perspective;
 
 	vec3 fog_light_color;
@@ -94,9 +93,14 @@ layout(set = 0, binding = 2, std140) uniform SceneData {
 
 	bool fog_enabled;
 	float fog_density;
+	float fog_start;
 
 	float z_far;
+
 	uint directional_light_count;
+	uint pad1;
+	uint pad2;
+	uint pad3;
 }
 scene_data;
 
@@ -169,7 +173,7 @@ vec4 fog_process(vec3 view, vec3 sky_color) {
 		}
 	}
 
-	float fog_amount = clamp(1.0 - exp(-scene_data.z_far * scene_data.fog_density), 0.0, 1.0);
+	float fog_amount = clamp(1.0 - exp((scene_data.fog_start - scene_data.z_far) * scene_data.fog_density), 0.0, 1.0);
 
 	return vec4(fog_color, fog_amount);
 }

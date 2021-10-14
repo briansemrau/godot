@@ -978,6 +978,7 @@
 			<argument index="6" name="height" type="float" />
 			<argument index="7" name="height_density" type="float" />
 			<argument index="8" name="aerial_perspective" type="float" />
+			<argument index="9" name="start" type="float" />
 			<description>
 			</description>
 		</method>
