@@ -1183,7 +1183,7 @@ public:
 	/**** FREE ****/
 	/**************/
 
-	virtual void free(RID p_id);
+	virtual void free_rid(RID p_id);
 
 	/****************/
 	/**** Timing ****/

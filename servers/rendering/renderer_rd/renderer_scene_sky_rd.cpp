@@ -309,7 +309,7 @@ void RendererSceneSkyRD::ReflectionData::clear_reflection_data() {
 	layers.clear();
 	radiance_base_cubemap = RID();
 	if (downsampled_radiance_cubemap.is_valid()) {
-		RD::get_singleton()->free(downsampled_radiance_cubemap);
+		RD::get_singleton()->free_rid(downsampled_radiance_cubemap);
 	}
 	downsampled_radiance_cubemap = RID();
 	downsampled_layer.mipmaps.clear();
@@ -554,23 +554,23 @@ void RendererSceneSkyRD::ReflectionData::update_reflection_mipmaps(RendererStora
 
 void RendererSceneSkyRD::Sky::free(RendererStorageRD *p_storage) {
 	if (radiance.is_valid()) {
-		RD::get_singleton()->free(radiance);
+		RD::get_singleton()->free_rid(radiance);
 		radiance = RID();
 	}
 	reflection.clear_reflection_data();
 
 	if (uniform_buffer.is_valid()) {
-		RD::get_singleton()->free(uniform_buffer);
+		RD::get_singleton()->free_rid(uniform_buffer);
 		uniform_buffer = RID();
 	}
 
 	if (half_res_pass.is_valid()) {
-		RD::get_singleton()->free(half_res_pass);
+		RD::get_singleton()->free_rid(half_res_pass);
 		half_res_pass = RID();
 	}
 
 	if (quarter_res_pass.is_valid()) {
-		RD::get_singleton()->free(quarter_res_pass);
+		RD::get_singleton()->free_rid(quarter_res_pass);
 		quarter_res_pass = RID();
 	}
 
@@ -651,7 +651,7 @@ bool RendererSceneSkyRD::Sky::set_radiance_size(int p_radiance_size) {
 	}
 
 	if (radiance.is_valid()) {
-		RD::get_singleton()->free(radiance);
+		RD::get_singleton()->free_rid(radiance);
 		radiance = RID();
 	}
 	reflection.clear_reflection_data();
@@ -672,7 +672,7 @@ bool RendererSceneSkyRD::Sky::set_mode(RS::SkyMode p_mode) {
 	}
 
 	if (radiance.is_valid()) {
-		RD::get_singleton()->free(radiance);
+		RD::get_singleton()->free_rid(radiance);
 		radiance = RID();
 	}
 	reflection.clear_reflection_data();
@@ -700,7 +700,7 @@ Ref<Image> RendererSceneSkyRD::Sky::bake_panorama(RendererStorageRD *p_storage, 
 		RID rad_tex = RD::get_singleton()->texture_create(tf, RD::TextureView());
 		p_storage->get_effects()->copy_cubemap_to_panorama(radiance, rad_tex, p_size, p_roughness_layers, reflection.layers.size() > 1);
 		Vector<uint8_t> data = RD::get_singleton()->texture_get_data(rad_tex, 0);
-		RD::get_singleton()->free(rad_tex);
+		RD::get_singleton()->free_rid(rad_tex);
 
 		Ref<Image> img;
 		img.instantiate();
@@ -1012,18 +1012,18 @@ RendererSceneSkyRD::~RendererSceneSkyRD() {
 	// TODO cleanup anything created in init...
 
 	if (RD::get_singleton()->uniform_set_is_valid(sky_scene_state.uniform_set)) {
-		RD::get_singleton()->free(sky_scene_state.uniform_set);
+		RD::get_singleton()->free_rid(sky_scene_state.uniform_set);
 	}
 
 	if (RD::get_singleton()->uniform_set_is_valid(sky_scene_state.default_fog_uniform_set)) {
-		RD::get_singleton()->free(sky_scene_state.default_fog_uniform_set);
+		RD::get_singleton()->free_rid(sky_scene_state.default_fog_uniform_set);
 	}
 
 	if (RD::get_singleton()->uniform_set_is_valid(sky_scene_state.fog_only_texture_uniform_set)) {
-		RD::get_singleton()->free(sky_scene_state.fog_only_texture_uniform_set);
+		RD::get_singleton()->free_rid(sky_scene_state.fog_only_texture_uniform_set);
 	}
 
-	RD::get_singleton()->free(index_buffer); //array gets freed as dependency
+	RD::get_singleton()->free_rid(index_buffer); //array gets freed as dependency
 }
 
 void RendererSceneSkyRD::setup(RendererSceneEnvironmentRD *p_env, RID p_render_buffers, const CameraMatrix &p_projection, const Transform3D &p_transform, const Size2i p_screen_size, RendererSceneRenderRD *p_scene_render) {
@@ -1064,14 +1064,14 @@ void RendererSceneSkyRD::setup(RendererSceneEnvironmentRD *p_env, RID p_render_b
 			sky->screen_size.y = sky->screen_size.y < 4 ? 4 : sky->screen_size.y;
 			if (shader_data->uses_half_res) {
 				if (sky->half_res_pass.is_valid()) {
-					RD::get_singleton()->free(sky->half_res_pass);
+					RD::get_singleton()->free_rid(sky->half_res_pass);
 					sky->half_res_pass = RID();
 				}
 				invalidate_sky(sky);
 			}
 			if (shader_data->uses_quarter_res) {
 				if (sky->quarter_res_pass.is_valid()) {
-					RD::get_singleton()->free(sky->quarter_res_pass);
+					RD::get_singleton()->free_rid(sky->quarter_res_pass);
 					sky->quarter_res_pass = RID();
 				}
 				invalidate_sky(sky);
@@ -1720,7 +1720,7 @@ void RendererSceneSkyRD::update_dirty_skys() {
 		if (texture_set_dirty) {
 			for (int i = 0; i < SKY_TEXTURE_SET_MAX; i++) {
 				if (sky->texture_uniform_sets[i].is_valid() && RD::get_singleton()->uniform_set_is_valid(sky->texture_uniform_sets[i])) {
-					RD::get_singleton()->free(sky->texture_uniform_sets[i]);
+					RD::get_singleton()->free_rid(sky->texture_uniform_sets[i]);
 					sky->texture_uniform_sets[i] = RID();
 				}
 			}

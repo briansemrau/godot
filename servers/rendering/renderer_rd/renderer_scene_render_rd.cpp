@@ -533,9 +533,9 @@ void RendererSceneRenderRD::reflection_atlas_set_size(RID p_ref_atlas, int p_ref
 
 	if (ra->reflection.is_valid()) {
 		//clear and invalidate everything
-		RD::get_singleton()->free(ra->reflection);
+		RD::get_singleton()->free_rid(ra->reflection);
 		ra->reflection = RID();
-		RD::get_singleton()->free(ra->depth_buffer);
+		RD::get_singleton()->free_rid(ra->depth_buffer);
 		ra->depth_buffer = RID();
 		for (int i = 0; i < ra->reflections.size(); i++) {
 			ra->reflections.write[i].data.clear_reflection_data();
@@ -632,7 +632,7 @@ bool RendererSceneRenderRD::reflection_probe_instance_begin_render(RID p_instanc
 
 	if (storage->reflection_probe_get_update_mode(rpi->probe) == RS::REFLECTION_PROBE_UPDATE_ALWAYS && atlas->reflection.is_valid() && atlas->reflections[0].data.layers[0].mipmaps.size() != 8) {
 		// Invalidate reflection atlas, need to regenerate
-		RD::get_singleton()->free(atlas->reflection);
+		RD::get_singleton()->free_rid(atlas->reflection);
 		atlas->reflection = RID();
 
 		for (int i = 0; i < atlas->reflections.size(); i++) {
@@ -834,7 +834,7 @@ void RendererSceneRenderRD::shadow_atlas_set_size(RID p_atlas, int p_size, bool 
 
 	// erasing atlas
 	if (shadow_atlas->depth.is_valid()) {
-		RD::get_singleton()->free(shadow_atlas->depth);
+		RD::get_singleton()->free_rid(shadow_atlas->depth);
 		shadow_atlas->depth = RID();
 	}
 	for (int i = 0; i < 4; i++) {
@@ -1216,7 +1216,7 @@ void RendererSceneRenderRD::directional_shadow_atlas_set_size(int p_size, bool p
 	directional_shadow.use_16_bits = p_16_bits;
 
 	if (directional_shadow.depth.is_valid()) {
-		RD::get_singleton()->free(directional_shadow.depth);
+		RD::get_singleton()->free_rid(directional_shadow.depth);
 		directional_shadow.depth = RID();
 		_base_uniforms_changed();
 	}
@@ -1674,27 +1674,27 @@ void RendererSceneRenderRD::_allocate_luminance_textures(RenderBuffers *rb) {
 
 void RendererSceneRenderRD::_free_render_buffer_data(RenderBuffers *rb) {
 	if (rb->texture_fb.is_valid()) {
-		RD::get_singleton()->free(rb->texture_fb);
+		RD::get_singleton()->free_rid(rb->texture_fb);
 		rb->texture_fb = RID();
 	}
 
 	if (rb->texture.is_valid()) {
-		RD::get_singleton()->free(rb->texture);
+		RD::get_singleton()->free_rid(rb->texture);
 		rb->texture = RID();
 	}
 
 	if (rb->depth_texture.is_valid()) {
-		RD::get_singleton()->free(rb->depth_texture);
+		RD::get_singleton()->free_rid(rb->depth_texture);
 		rb->depth_texture = RID();
 	}
 
 	if (rb->depth_back_fb.is_valid()) {
-		RD::get_singleton()->free(rb->depth_back_fb);
+		RD::get_singleton()->free_rid(rb->depth_back_fb);
 		rb->depth_back_fb = RID();
 	}
 
 	if (rb->depth_back_texture.is_valid()) {
-		RD::get_singleton()->free(rb->depth_back_texture);
+		RD::get_singleton()->free_rid(rb->depth_back_texture);
 		rb->depth_back_texture = RID();
 	}
 
@@ -1704,51 +1704,51 @@ void RendererSceneRenderRD::_free_render_buffer_data(RenderBuffers *rb) {
 
 			// do free the mobile extra stuff
 			if (rb->blur[i].mipmaps[m].fb.is_valid()) {
-				RD::get_singleton()->free(rb->blur[i].mipmaps[m].fb);
+				RD::get_singleton()->free_rid(rb->blur[i].mipmaps[m].fb);
 			}
 			if (rb->blur[i].mipmaps[m].half_fb.is_valid()) {
-				RD::get_singleton()->free(rb->blur[i].mipmaps[m].half_fb);
+				RD::get_singleton()->free_rid(rb->blur[i].mipmaps[m].half_fb);
 			}
 			if (rb->blur[i].mipmaps[m].half_texture.is_valid()) {
-				RD::get_singleton()->free(rb->blur[i].mipmaps[m].half_texture);
+				RD::get_singleton()->free_rid(rb->blur[i].mipmaps[m].half_texture);
 			}
 		}
 		rb->blur[i].mipmaps.clear();
 
 		if (rb->blur[i].texture.is_valid()) {
-			RD::get_singleton()->free(rb->blur[i].texture);
+			RD::get_singleton()->free_rid(rb->blur[i].texture);
 			rb->blur[i].texture = RID();
 		}
 	}
 
 	for (int i = 0; i < rb->luminance.fb.size(); i++) {
-		RD::get_singleton()->free(rb->luminance.fb[i]);
+		RD::get_singleton()->free_rid(rb->luminance.fb[i]);
 	}
 	rb->luminance.fb.clear();
 
 	for (int i = 0; i < rb->luminance.reduce.size(); i++) {
-		RD::get_singleton()->free(rb->luminance.reduce[i]);
+		RD::get_singleton()->free_rid(rb->luminance.reduce[i]);
 	}
 	rb->luminance.reduce.clear();
 
 	if (rb->luminance.current_fb.is_valid()) {
-		RD::get_singleton()->free(rb->luminance.current_fb);
+		RD::get_singleton()->free_rid(rb->luminance.current_fb);
 		rb->luminance.current_fb = RID();
 	}
 
 	if (rb->luminance.current.is_valid()) {
-		RD::get_singleton()->free(rb->luminance.current);
+		RD::get_singleton()->free_rid(rb->luminance.current);
 		rb->luminance.current = RID();
 	}
 
 	if (rb->ssao.depth.is_valid()) {
-		RD::get_singleton()->free(rb->ssao.depth);
-		RD::get_singleton()->free(rb->ssao.ao_deinterleaved);
-		RD::get_singleton()->free(rb->ssao.ao_pong);
-		RD::get_singleton()->free(rb->ssao.ao_final);
+		RD::get_singleton()->free_rid(rb->ssao.depth);
+		RD::get_singleton()->free_rid(rb->ssao.ao_deinterleaved);
+		RD::get_singleton()->free_rid(rb->ssao.ao_pong);
+		RD::get_singleton()->free_rid(rb->ssao.ao_final);
 
-		RD::get_singleton()->free(rb->ssao.importance_map[0]);
-		RD::get_singleton()->free(rb->ssao.importance_map[1]);
+		RD::get_singleton()->free_rid(rb->ssao.importance_map[0]);
+		RD::get_singleton()->free_rid(rb->ssao.importance_map[1]);
 
 		rb->ssao.depth = RID();
 		rb->ssao.ao_deinterleaved = RID();
@@ -1762,22 +1762,22 @@ void RendererSceneRenderRD::_free_render_buffer_data(RenderBuffers *rb) {
 	}
 
 	if (rb->ssr.blur_radius[0].is_valid()) {
-		RD::get_singleton()->free(rb->ssr.blur_radius[0]);
-		RD::get_singleton()->free(rb->ssr.blur_radius[1]);
+		RD::get_singleton()->free_rid(rb->ssr.blur_radius[0]);
+		RD::get_singleton()->free_rid(rb->ssr.blur_radius[1]);
 		rb->ssr.blur_radius[0] = RID();
 		rb->ssr.blur_radius[1] = RID();
 	}
 
 	if (rb->ssr.depth_scaled.is_valid()) {
-		RD::get_singleton()->free(rb->ssr.depth_scaled);
+		RD::get_singleton()->free_rid(rb->ssr.depth_scaled);
 		rb->ssr.depth_scaled = RID();
-		RD::get_singleton()->free(rb->ssr.normal_scaled);
+		RD::get_singleton()->free_rid(rb->ssr.normal_scaled);
 		rb->ssr.normal_scaled = RID();
 	}
 
 	if (rb->ambient_buffer.is_valid()) {
-		RD::get_singleton()->free(rb->ambient_buffer);
-		RD::get_singleton()->free(rb->reflection_buffer);
+		RD::get_singleton()->free_rid(rb->ambient_buffer);
+		RD::get_singleton()->free_rid(rb->reflection_buffer);
 		rb->ambient_buffer = RID();
 		rb->reflection_buffer = RID();
 	}
@@ -1863,13 +1863,13 @@ void RendererSceneRenderRD::_process_ssao(RID p_render_buffers, RID p_environmen
 	RENDER_TIMESTAMP("Process SSAO");
 
 	if (rb->ssao.ao_final.is_valid() && ssao_using_half_size != ssao_half_size) {
-		RD::get_singleton()->free(rb->ssao.depth);
-		RD::get_singleton()->free(rb->ssao.ao_deinterleaved);
-		RD::get_singleton()->free(rb->ssao.ao_pong);
-		RD::get_singleton()->free(rb->ssao.ao_final);
+		RD::get_singleton()->free_rid(rb->ssao.depth);
+		RD::get_singleton()->free_rid(rb->ssao.ao_deinterleaved);
+		RD::get_singleton()->free_rid(rb->ssao.ao_pong);
+		RD::get_singleton()->free_rid(rb->ssao.ao_final);
 
-		RD::get_singleton()->free(rb->ssao.importance_map[0]);
-		RD::get_singleton()->free(rb->ssao.importance_map[1]);
+		RD::get_singleton()->free_rid(rb->ssao.importance_map[0]);
+		RD::get_singleton()->free_rid(rb->ssao.importance_map[1]);
 
 		rb->ssao.depth = RID();
 		rb->ssao.ao_deinterleaved = RID();
@@ -3465,21 +3465,21 @@ void RendererSceneRenderRD::_setup_decals(const PagedArray<RID> &p_decals, const
 void RendererSceneRenderRD::_volumetric_fog_erase(RenderBuffers *rb) {
 	ERR_FAIL_COND(!rb->volumetric_fog);
 
-	RD::get_singleton()->free(rb->volumetric_fog->prev_light_density_map);
-	RD::get_singleton()->free(rb->volumetric_fog->light_density_map);
-	RD::get_singleton()->free(rb->volumetric_fog->fog_map);
+	RD::get_singleton()->free_rid(rb->volumetric_fog->prev_light_density_map);
+	RD::get_singleton()->free_rid(rb->volumetric_fog->light_density_map);
+	RD::get_singleton()->free_rid(rb->volumetric_fog->fog_map);
 
 	if (rb->volumetric_fog->uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(rb->volumetric_fog->uniform_set)) {
-		RD::get_singleton()->free(rb->volumetric_fog->uniform_set);
+		RD::get_singleton()->free_rid(rb->volumetric_fog->uniform_set);
 	}
 	if (rb->volumetric_fog->uniform_set2.is_valid() && RD::get_singleton()->uniform_set_is_valid(rb->volumetric_fog->uniform_set2)) {
-		RD::get_singleton()->free(rb->volumetric_fog->uniform_set2);
+		RD::get_singleton()->free_rid(rb->volumetric_fog->uniform_set2);
 	}
 	if (rb->volumetric_fog->sdfgi_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(rb->volumetric_fog->sdfgi_uniform_set)) {
-		RD::get_singleton()->free(rb->volumetric_fog->sdfgi_uniform_set);
+		RD::get_singleton()->free_rid(rb->volumetric_fog->sdfgi_uniform_set);
 	}
 	if (rb->volumetric_fog->sky_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(rb->volumetric_fog->sky_uniform_set)) {
-		RD::get_singleton()->free(rb->volumetric_fog->sky_uniform_set);
+		RD::get_singleton()->free_rid(rb->volumetric_fog->sky_uniform_set);
 	}
 
 	memdelete(rb->volumetric_fog);
@@ -4460,13 +4460,13 @@ bool RendererSceneRenderRD::free(RID p_rid) {
 	} else if (gi.voxel_gi_instance_owner.owns(p_rid)) {
 		RendererSceneGIRD::VoxelGIInstance *voxel_gi = gi.voxel_gi_instance_owner.get_or_null(p_rid);
 		if (voxel_gi->texture.is_valid()) {
-			RD::get_singleton()->free(voxel_gi->texture);
-			RD::get_singleton()->free(voxel_gi->write_buffer);
+			RD::get_singleton()->free_rid(voxel_gi->texture);
+			RD::get_singleton()->free_rid(voxel_gi->write_buffer);
 		}
 
 		for (int i = 0; i < voxel_gi->dynamic_maps.size(); i++) {
-			RD::get_singleton()->free(voxel_gi->dynamic_maps[i].texture);
-			RD::get_singleton()->free(voxel_gi->dynamic_maps[i].depth);
+			RD::get_singleton()->free_rid(voxel_gi->dynamic_maps[i].texture);
+			RD::get_singleton()->free_rid(voxel_gi->dynamic_maps[i].depth);
 		}
 
 		gi.voxel_gi_instance_owner.free(p_rid);
@@ -4603,7 +4603,7 @@ TypedArray<Image> RendererSceneRenderRD::bake_render_uv2(RID p_base, const Vecto
 		Ref<Image> img;
 		img.instantiate();
 		img->create(p_image_size.width, p_image_size.height, false, Image::FORMAT_RGBA8, data);
-		RD::get_singleton()->free(albedo_alpha_tex);
+		RD::get_singleton()->free_rid(albedo_alpha_tex);
 		ret.push_back(img);
 	}
 
@@ -4612,7 +4612,7 @@ TypedArray<Image> RendererSceneRenderRD::bake_render_uv2(RID p_base, const Vecto
 		Ref<Image> img;
 		img.instantiate();
 		img->create(p_image_size.width, p_image_size.height, false, Image::FORMAT_RGBA8, data);
-		RD::get_singleton()->free(normal_tex);
+		RD::get_singleton()->free_rid(normal_tex);
 		ret.push_back(img);
 	}
 
@@ -4621,7 +4621,7 @@ TypedArray<Image> RendererSceneRenderRD::bake_render_uv2(RID p_base, const Vecto
 		Ref<Image> img;
 		img.instantiate();
 		img->create(p_image_size.width, p_image_size.height, false, Image::FORMAT_RGBA8, data);
-		RD::get_singleton()->free(orm_tex);
+		RD::get_singleton()->free_rid(orm_tex);
 		ret.push_back(img);
 	}
 
@@ -4630,12 +4630,12 @@ TypedArray<Image> RendererSceneRenderRD::bake_render_uv2(RID p_base, const Vecto
 		Ref<Image> img;
 		img.instantiate();
 		img->create(p_image_size.width, p_image_size.height, false, Image::FORMAT_RGBAH, data);
-		RD::get_singleton()->free(emission_tex);
+		RD::get_singleton()->free_rid(emission_tex);
 		ret.push_back(img);
 	}
 
-	RD::get_singleton()->free(depth_write_tex);
-	RD::get_singleton()->free(depth_tex);
+	RD::get_singleton()->free_rid(depth_write_tex);
+	RD::get_singleton()->free_rid(depth_tex);
 
 	return ret;
 }
@@ -4796,24 +4796,24 @@ void RendererSceneRenderRD::init() {
 
 RendererSceneRenderRD::~RendererSceneRenderRD() {
 	for (const KeyValue<int, ShadowCubemap> &E : shadow_cubemaps) {
-		RD::get_singleton()->free(E.value.cubemap);
+		RD::get_singleton()->free_rid(E.value.cubemap);
 	}
 
 	if (sky.sky_scene_state.uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(sky.sky_scene_state.uniform_set)) {
-		RD::get_singleton()->free(sky.sky_scene_state.uniform_set);
+		RD::get_singleton()->free_rid(sky.sky_scene_state.uniform_set);
 	}
 
 	if (is_dynamic_gi_supported()) {
 		gi.free();
 
 		volumetric_fog.shader.version_free(volumetric_fog.shader_version);
-		RD::get_singleton()->free(volumetric_fog.params_ubo);
+		RD::get_singleton()->free_rid(volumetric_fog.params_ubo);
 	}
 
 	RendererSceneSkyRD::SkyMaterialData *md = (RendererSceneSkyRD::SkyMaterialData *)storage->material_get_data(sky.sky_shader.default_material, RendererStorageRD::SHADER_TYPE_SKY);
 	sky.sky_shader.shader.version_free(md->shader_data->version);
-	RD::get_singleton()->free(sky.sky_scene_state.directional_light_buffer);
-	RD::get_singleton()->free(sky.sky_scene_state.uniform_buffer);
+	RD::get_singleton()->free_rid(sky.sky_scene_state.directional_light_buffer);
+	RD::get_singleton()->free_rid(sky.sky_scene_state.uniform_buffer);
 	memdelete_arr(sky.sky_scene_state.directional_lights);
 	memdelete_arr(sky.sky_scene_state.last_frame_directional_lights);
 	storage->free(sky.sky_shader.default_shader);
@@ -4826,11 +4826,11 @@ RendererSceneRenderRD::~RendererSceneRenderRD() {
 	memdelete_arr(soft_shadow_kernel);
 
 	{
-		RD::get_singleton()->free(cluster.directional_light_buffer);
-		RD::get_singleton()->free(cluster.omni_light_buffer);
-		RD::get_singleton()->free(cluster.spot_light_buffer);
-		RD::get_singleton()->free(cluster.reflection_buffer);
-		RD::get_singleton()->free(cluster.decal_buffer);
+		RD::get_singleton()->free_rid(cluster.directional_light_buffer);
+		RD::get_singleton()->free_rid(cluster.omni_light_buffer);
+		RD::get_singleton()->free_rid(cluster.spot_light_buffer);
+		RD::get_singleton()->free_rid(cluster.reflection_buffer);
+		RD::get_singleton()->free_rid(cluster.decal_buffer);
 		memdelete_arr(cluster.directional_lights);
 		memdelete_arr(cluster.omni_lights);
 		memdelete_arr(cluster.spot_lights);
@@ -4842,7 +4842,7 @@ RendererSceneRenderRD::~RendererSceneRenderRD() {
 		memdelete_arr(cluster.decal_sort);
 	}
 
-	RD::get_singleton()->free(shadow_sampler);
+	RD::get_singleton()->free_rid(shadow_sampler);
 
 	directional_shadow_atlas_set_size(0);
 	cull_argument.reset(); //avoid exit error

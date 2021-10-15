@@ -67,12 +67,12 @@ void RenderForwardMobile::_map_forward_id(ForwardIDType p_type, ForwardID p_id, 
 
 void RenderForwardMobile::RenderBufferDataForwardMobile::clear() {
 	if (color_msaa.is_valid()) {
-		RD::get_singleton()->free(color_msaa);
+		RD::get_singleton()->free_rid(color_msaa);
 		color_msaa = RID();
 	}
 
 	if (depth_msaa.is_valid()) {
-		RD::get_singleton()->free(depth_msaa);
+		RD::get_singleton()->free_rid(depth_msaa);
 		depth_msaa = RID();
 	}
 
@@ -440,7 +440,7 @@ RID RenderForwardMobile::_setup_render_pass_uniform_set(RenderListType p_render_
 	}
 
 	if (render_pass_uniform_sets[p_index].is_valid() && RD::get_singleton()->uniform_set_is_valid(render_pass_uniform_sets[p_index])) {
-		RD::get_singleton()->free(render_pass_uniform_sets[p_index]);
+		RD::get_singleton()->free_rid(render_pass_uniform_sets[p_index]);
 	}
 
 	render_pass_uniform_sets[p_index] = RD::get_singleton()->uniform_set_create(uniforms, scene_shader.default_shader_rd, RENDER_PASS_UNIFORM_SET);
@@ -1120,7 +1120,7 @@ void RenderForwardMobile::_render_particle_collider_heightfield(RID p_fb, const 
 
 void RenderForwardMobile::_base_uniforms_changed() {
 	if (!render_base_uniform_set.is_null() && RD::get_singleton()->uniform_set_is_valid(render_base_uniform_set)) {
-		RD::get_singleton()->free(render_base_uniform_set);
+		RD::get_singleton()->free_rid(render_base_uniform_set);
 	}
 	render_base_uniform_set = RID();
 }
@@ -1128,7 +1128,7 @@ void RenderForwardMobile::_base_uniforms_changed() {
 void RenderForwardMobile::_update_render_base_uniform_set() {
 	if (render_base_uniform_set.is_null() || !RD::get_singleton()->uniform_set_is_valid(render_base_uniform_set) || (lightmap_texture_array_version != storage->lightmap_array_get_version())) {
 		if (render_base_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(render_base_uniform_set)) {
-			RD::get_singleton()->free(render_base_uniform_set);
+			RD::get_singleton()->free_rid(render_base_uniform_set);
 		}
 
 		// This is all loaded into set 0
@@ -2660,16 +2660,16 @@ RenderForwardMobile::~RenderForwardMobile() {
 	//clear base uniform set if still valid
 	for (uint32_t i = 0; i < render_pass_uniform_sets.size(); i++) {
 		if (render_pass_uniform_sets[i].is_valid() && RD::get_singleton()->uniform_set_is_valid(render_pass_uniform_sets[i])) {
-			RD::get_singleton()->free(render_pass_uniform_sets[i]);
+			RD::get_singleton()->free_rid(render_pass_uniform_sets[i]);
 		}
 	}
 
 	{
 		for (uint32_t i = 0; i < scene_state.uniform_buffers.size(); i++) {
-			RD::get_singleton()->free(scene_state.uniform_buffers[i]);
+			RD::get_singleton()->free_rid(scene_state.uniform_buffers[i]);
 		}
-		RD::get_singleton()->free(scene_state.lightmap_buffer);
-		RD::get_singleton()->free(scene_state.lightmap_capture_buffer);
+		RD::get_singleton()->free_rid(scene_state.lightmap_buffer);
+		RD::get_singleton()->free_rid(scene_state.lightmap_capture_buffer);
 		memdelete_arr(scene_state.lightmap_captures);
 	}
 }

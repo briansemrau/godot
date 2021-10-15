@@ -328,14 +328,14 @@ void RendererCanvasRenderRD::free_polygon(PolygonID p_polygon) {
 	PolygonBuffers &pb = *pb_ptr;
 
 	if (pb.indices.is_valid()) {
-		RD::get_singleton()->free(pb.indices);
+		RD::get_singleton()->free_rid(pb.indices);
 	}
 	if (pb.index_buffer.is_valid()) {
-		RD::get_singleton()->free(pb.index_buffer);
+		RD::get_singleton()->free_rid(pb.index_buffer);
 	}
 
-	RD::get_singleton()->free(pb.vertex_array);
-	RD::get_singleton()->free(pb.vertex_buffer);
+	RD::get_singleton()->free_rid(pb.vertex_array);
+	RD::get_singleton()->free_rid(pb.vertex_buffer);
 
 	polygon_buffers.polygons.erase(p_polygon);
 }
@@ -1506,7 +1506,7 @@ void RendererCanvasRenderRD::light_set_use_shadow(RID p_rid, bool p_enable) {
 void RendererCanvasRenderRD::_update_shadow_atlas() {
 	if (state.shadow_fb == RID()) {
 		//ah, we lack the shadow texture..
-		RD::get_singleton()->free(state.shadow_texture); //erase placeholder
+		RD::get_singleton()->free_rid(state.shadow_texture); //erase placeholder
 
 		Vector<RID> fb_textures;
 
@@ -1793,10 +1793,10 @@ void RendererCanvasRenderRD::occluder_polygon_set_shape(RID p_occluder, const Ve
 	}
 
 	if (oc->line_point_count != lines.size() && oc->vertex_array.is_valid()) {
-		RD::get_singleton()->free(oc->vertex_array);
-		RD::get_singleton()->free(oc->vertex_buffer);
-		RD::get_singleton()->free(oc->index_array);
-		RD::get_singleton()->free(oc->index_buffer);
+		RD::get_singleton()->free_rid(oc->vertex_array);
+		RD::get_singleton()->free_rid(oc->vertex_buffer);
+		RD::get_singleton()->free_rid(oc->index_array);
+		RD::get_singleton()->free_rid(oc->index_buffer);
 
 		oc->vertex_array = RID();
 		oc->vertex_buffer = RID();
@@ -1897,10 +1897,10 @@ void RendererCanvasRenderRD::occluder_polygon_set_shape(RID p_occluder, const Ve
 	}
 
 	if (oc->sdf_index_count != sdf_indices.size() && oc->sdf_point_count != p_points.size() && oc->sdf_vertex_array.is_valid()) {
-		RD::get_singleton()->free(oc->sdf_vertex_array);
-		RD::get_singleton()->free(oc->sdf_vertex_buffer);
-		RD::get_singleton()->free(oc->sdf_index_array);
-		RD::get_singleton()->free(oc->sdf_index_buffer);
+		RD::get_singleton()->free_rid(oc->sdf_vertex_array);
+		RD::get_singleton()->free_rid(oc->sdf_vertex_buffer);
+		RD::get_singleton()->free_rid(oc->sdf_index_array);
+		RD::get_singleton()->free_rid(oc->sdf_index_buffer);
 
 		oc->sdf_vertex_array = RID();
 		oc->sdf_vertex_buffer = RID();
@@ -2632,8 +2632,8 @@ void RendererCanvasRenderRD::set_shadow_texture_size(int p_size) {
 	}
 	state.shadow_texture_size = p_size;
 	if (state.shadow_fb.is_valid()) {
-		RD::get_singleton()->free(state.shadow_texture);
-		RD::get_singleton()->free(state.shadow_depth_texture);
+		RD::get_singleton()->free_rid(state.shadow_texture);
+		RD::get_singleton()->free_rid(state.shadow_depth_texture);
 		state.shadow_fb = RID();
 
 		{
@@ -2658,20 +2658,20 @@ RendererCanvasRenderRD::~RendererCanvasRenderRD() {
 
 	{
 		if (state.canvas_state_buffer.is_valid()) {
-			RD::get_singleton()->free(state.canvas_state_buffer);
+			RD::get_singleton()->free_rid(state.canvas_state_buffer);
 		}
 
 		memdelete_arr(state.light_uniforms);
-		RD::get_singleton()->free(state.lights_uniform_buffer);
-		RD::get_singleton()->free(shader.default_skeleton_uniform_buffer);
-		RD::get_singleton()->free(shader.default_skeleton_texture_buffer);
+		RD::get_singleton()->free_rid(state.lights_uniform_buffer);
+		RD::get_singleton()->free_rid(shader.default_skeleton_uniform_buffer);
+		RD::get_singleton()->free_rid(shader.default_skeleton_texture_buffer);
 	}
 
 	//shadow rendering
 	{
 		shadow_render.shader.version_free(shadow_render.shader_version);
 		//this will also automatically clear all pipelines
-		RD::get_singleton()->free(state.shadow_sampler);
+		RD::get_singleton()->free_rid(state.shadow_sampler);
 	}
 	//bindings
 
@@ -2681,15 +2681,15 @@ RendererCanvasRenderRD::~RendererCanvasRenderRD() {
 
 	//buffers
 	{
-		RD::get_singleton()->free(shader.quad_index_array);
-		RD::get_singleton()->free(shader.quad_index_buffer);
+		RD::get_singleton()->free_rid(shader.quad_index_array);
+		RD::get_singleton()->free_rid(shader.quad_index_buffer);
 		//primitives are erase by dependency
 	}
 
 	if (state.shadow_fb.is_valid()) {
-		RD::get_singleton()->free(state.shadow_depth_texture);
+		RD::get_singleton()->free_rid(state.shadow_depth_texture);
 	}
-	RD::get_singleton()->free(state.shadow_texture);
+	RD::get_singleton()->free_rid(state.shadow_texture);
 
 	storage->free(default_canvas_texture);
 	//pipelines don't need freeing, they are all gone after shaders are gone

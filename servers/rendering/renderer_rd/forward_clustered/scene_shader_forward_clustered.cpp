@@ -464,8 +464,8 @@ SceneShaderForwardClustered::SceneShaderForwardClustered() {
 }
 
 SceneShaderForwardClustered::~SceneShaderForwardClustered() {
-	RD::get_singleton()->free(default_vec4_xform_buffer);
-	RD::get_singleton()->free(shadow_sampler);
+	RD::get_singleton()->free_rid(default_vec4_xform_buffer);
+	RD::get_singleton()->free_rid(shadow_sampler);
 
 	storage->free(overdraw_material_shader);
 	storage->free(default_shader);

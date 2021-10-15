@@ -600,7 +600,7 @@ void RendererStorageRD::texture_2d_initialize(RID p_texture, const Ref<Image> &p
 		rd_view.format_override = texture.rd_format_srgb;
 		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
 		if (texture.rd_texture_srgb.is_null()) {
-			RD::get_singleton()->free(texture.rd_texture);
+			RD::get_singleton()->free_rid(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
 		}
 	}
@@ -710,7 +710,7 @@ void RendererStorageRD::texture_2d_layered_initialize(RID p_texture, const Vecto
 		rd_view.format_override = texture.rd_format_srgb;
 		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
 		if (texture.rd_texture_srgb.is_null()) {
-			RD::get_singleton()->free(texture.rd_texture);
+			RD::get_singleton()->free_rid(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
 		}
 	}
@@ -826,7 +826,7 @@ void RendererStorageRD::texture_3d_initialize(RID p_texture, Image::Format p_for
 		rd_view.format_override = texture.rd_format_srgb;
 		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
 		if (texture.rd_texture_srgb.is_null()) {
-			RD::get_singleton()->free(texture.rd_texture);
+			RD::get_singleton()->free_rid(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
 		}
 	}
@@ -936,11 +936,11 @@ void RendererStorageRD::texture_proxy_update(RID p_texture, RID p_proxy_to) {
 	if (tex->proxy_to.is_valid()) {
 		//unlink proxy
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture)) {
-			RD::get_singleton()->free(tex->rd_texture);
+			RD::get_singleton()->free_rid(tex->rd_texture);
 			tex->rd_texture = RID();
 		}
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture_srgb)) {
-			RD::get_singleton()->free(tex->rd_texture_srgb);
+			RD::get_singleton()->free_rid(tex->rd_texture_srgb);
 			tex->rd_texture_srgb = RID();
 		}
 		Texture *prev_tex = texture_owner.get_or_null(tex->proxy_to);
@@ -1118,9 +1118,9 @@ void RendererStorageRD::texture_replace(RID p_texture, RID p_by_texture) {
 	}
 
 	if (tex->rd_texture_srgb.is_valid()) {
-		RD::get_singleton()->free(tex->rd_texture_srgb);
+		RD::get_singleton()->free_rid(tex->rd_texture_srgb);
 	}
-	RD::get_singleton()->free(tex->rd_texture);
+	RD::get_singleton()->free_rid(tex->rd_texture);
 
 	if (tex->canvas_texture) {
 		memdelete(tex->canvas_texture);
@@ -1215,7 +1215,7 @@ void RendererStorageRD::CanvasTexture::clear_sets() {
 	for (int i = 1; i < RS::CANVAS_ITEM_TEXTURE_FILTER_MAX; i++) {
 		for (int j = 1; j < RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX; j++) {
 			if (RD::get_singleton()->uniform_set_is_valid(uniform_sets[i][j])) {
-				RD::get_singleton()->free(uniform_sets[i][j]);
+				RD::get_singleton()->free_rid(uniform_sets[i][j]);
 				uniform_sets[i][j] = RID();
 			}
 		}
@@ -2604,7 +2604,7 @@ RendererStorageRD::MaterialData::~MaterialData() {
 	}
 
 	if (uniform_buffer.is_valid()) {
-		RD::get_singleton()->free(uniform_buffer);
+		RD::get_singleton()->free_rid(uniform_buffer);
 	}
 }
 
@@ -2789,7 +2789,7 @@ void RendererStorageRD::MaterialData::update_textures(const Map<StringName, Vari
 void RendererStorageRD::MaterialData::free_parameters_uniform_set(RID p_uniform_set) {
 	if (p_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(p_uniform_set)) {
 		RD::get_singleton()->uniform_set_set_invalidation_callback(p_uniform_set, nullptr, nullptr);
-		RD::get_singleton()->free(p_uniform_set);
+		RD::get_singleton()->free_rid(p_uniform_set);
 	}
 }
 
@@ -2797,7 +2797,7 @@ bool RendererStorageRD::MaterialData::update_parameters_uniform_set(const Map<St
 	if ((uint32_t)ubo_data.size() != p_ubo_size) {
 		p_uniform_dirty = true;
 		if (uniform_buffer.is_valid()) {
-			RD::get_singleton()->free(uniform_buffer);
+			RD::get_singleton()->free_rid(uniform_buffer);
 			uniform_buffer = RID();
 		}
 
@@ -2810,7 +2810,7 @@ bool RendererStorageRD::MaterialData::update_parameters_uniform_set(const Map<St
 		//clear previous uniform set
 		if (uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(uniform_set)) {
 			RD::get_singleton()->uniform_set_set_invalidation_callback(uniform_set, nullptr, nullptr);
-			RD::get_singleton()->free(uniform_set);
+			RD::get_singleton()->free_rid(uniform_set);
 			uniform_set = RID();
 		}
 	}
@@ -2833,7 +2833,7 @@ bool RendererStorageRD::MaterialData::update_parameters_uniform_set(const Map<St
 		//clear previous uniform set
 		if (uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(uniform_set)) {
 			RD::get_singleton()->uniform_set_set_invalidation_callback(uniform_set, nullptr, nullptr);
-			RD::get_singleton()->free(uniform_set);
+			RD::get_singleton()->free_rid(uniform_set);
 			uniform_set = RID();
 		}
 	}
@@ -3411,30 +3411,30 @@ void RendererStorageRD::mesh_clear(RID p_mesh) {
 	ERR_FAIL_COND(!mesh);
 	for (uint32_t i = 0; i < mesh->surface_count; i++) {
 		Mesh::Surface &s = *mesh->surfaces[i];
-		RD::get_singleton()->free(s.vertex_buffer); //clears arrays as dependency automatically, including all versions
+		RD::get_singleton()->free_rid(s.vertex_buffer); //clears arrays as dependency automatically, including all versions
 		if (s.attribute_buffer.is_valid()) {
-			RD::get_singleton()->free(s.attribute_buffer);
+			RD::get_singleton()->free_rid(s.attribute_buffer);
 		}
 		if (s.skin_buffer.is_valid()) {
-			RD::get_singleton()->free(s.skin_buffer);
+			RD::get_singleton()->free_rid(s.skin_buffer);
 		}
 		if (s.versions) {
 			memfree(s.versions); //reallocs, so free with memfree.
 		}
 
 		if (s.index_buffer.is_valid()) {
-			RD::get_singleton()->free(s.index_buffer);
+			RD::get_singleton()->free_rid(s.index_buffer);
 		}
 
 		if (s.lod_count) {
 			for (uint32_t j = 0; j < s.lod_count; j++) {
-				RD::get_singleton()->free(s.lods[j].index_buffer);
+				RD::get_singleton()->free_rid(s.lods[j].index_buffer);
 			}
 			memdelete_arr(s.lods);
 		}
 
 		if (s.blend_shape_buffer.is_valid()) {
-			RD::get_singleton()->free(s.blend_shape_buffer);
+			RD::get_singleton()->free_rid(s.blend_shape_buffer);
 		}
 
 		memdelete(mesh->surfaces[i]);
@@ -3510,11 +3510,11 @@ void RendererStorageRD::mesh_instance_set_blend_shape_weight(RID p_mesh_instance
 void RendererStorageRD::_mesh_instance_clear(MeshInstance *mi) {
 	for (uint32_t i = 0; i < mi->surfaces.size(); i++) {
 		if (mi->surfaces[i].vertex_buffer.is_valid()) {
-			RD::get_singleton()->free(mi->surfaces[i].vertex_buffer);
+			RD::get_singleton()->free_rid(mi->surfaces[i].vertex_buffer);
 		}
 		if (mi->surfaces[i].versions) {
 			for (uint32_t j = 0; j < mi->surfaces[i].version_count; j++) {
-				RD::get_singleton()->free(mi->surfaces[i].versions[j].vertex_array);
+				RD::get_singleton()->free_rid(mi->surfaces[i].versions[j].vertex_array);
 			}
 			memfree(mi->surfaces[i].versions);
 		}
@@ -3522,7 +3522,7 @@ void RendererStorageRD::_mesh_instance_clear(MeshInstance *mi) {
 	mi->surfaces.clear();
 
 	if (mi->blend_weights_buffer.is_valid()) {
-		RD::get_singleton()->free(mi->blend_weights_buffer);
+		RD::get_singleton()->free_rid(mi->blend_weights_buffer);
 	}
 	mi->blend_weights.clear();
 	mi->weights_dirty = false;
@@ -3871,7 +3871,7 @@ void RendererStorageRD::multimesh_allocate_data(RID p_multimesh, int p_instances
 	}
 
 	if (multimesh->buffer.is_valid()) {
-		RD::get_singleton()->free(multimesh->buffer);
+		RD::get_singleton()->free_rid(multimesh->buffer);
 		multimesh->buffer = RID();
 		multimesh->uniform_set_2d = RID(); //cleared by dependency
 		multimesh->uniform_set_3d = RID(); //cleared by dependency
@@ -4446,34 +4446,34 @@ bool RendererStorageRD::particles_get_emitting(RID p_particles) {
 
 void RendererStorageRD::_particles_free_data(Particles *particles) {
 	if (particles->particle_buffer.is_valid()) {
-		RD::get_singleton()->free(particles->particle_buffer);
+		RD::get_singleton()->free_rid(particles->particle_buffer);
 		particles->particle_buffer = RID();
-		RD::get_singleton()->free(particles->particle_instance_buffer);
+		RD::get_singleton()->free_rid(particles->particle_instance_buffer);
 		particles->particle_instance_buffer = RID();
 	}
 
 	if (particles->frame_params_buffer.is_valid()) {
-		RD::get_singleton()->free(particles->frame_params_buffer);
+		RD::get_singleton()->free_rid(particles->frame_params_buffer);
 		particles->frame_params_buffer = RID();
 	}
 	particles->particles_transforms_buffer_uniform_set = RID();
 
 	if (RD::get_singleton()->uniform_set_is_valid(particles->trail_bind_pose_uniform_set)) {
-		RD::get_singleton()->free(particles->trail_bind_pose_uniform_set);
+		RD::get_singleton()->free_rid(particles->trail_bind_pose_uniform_set);
 	}
 	particles->trail_bind_pose_uniform_set = RID();
 
 	if (particles->trail_bind_pose_buffer.is_valid()) {
-		RD::get_singleton()->free(particles->trail_bind_pose_buffer);
+		RD::get_singleton()->free_rid(particles->trail_bind_pose_buffer);
 		particles->trail_bind_pose_buffer = RID();
 	}
 	if (RD::get_singleton()->uniform_set_is_valid(particles->collision_textures_uniform_set)) {
-		RD::get_singleton()->free(particles->collision_textures_uniform_set);
+		RD::get_singleton()->free_rid(particles->collision_textures_uniform_set);
 	}
 	particles->collision_textures_uniform_set = RID();
 
 	if (particles->particles_sort_buffer.is_valid()) {
-		RD::get_singleton()->free(particles->particles_sort_buffer);
+		RD::get_singleton()->free_rid(particles->particles_sort_buffer);
 		particles->particles_sort_buffer = RID();
 		particles->particles_sort_uniform_set = RID();
 	}
@@ -4481,13 +4481,13 @@ void RendererStorageRD::_particles_free_data(Particles *particles) {
 	if (particles->emission_buffer != nullptr) {
 		particles->emission_buffer = nullptr;
 		particles->emission_buffer_data.clear();
-		RD::get_singleton()->free(particles->emission_storage_buffer);
+		RD::get_singleton()->free_rid(particles->emission_storage_buffer);
 		particles->emission_storage_buffer = RID();
 	}
 
 	if (RD::get_singleton()->uniform_set_is_valid(particles->particles_material_uniform_set)) {
 		//will need to be re-created
-		RD::get_singleton()->free(particles->particles_material_uniform_set);
+		RD::get_singleton()->free_rid(particles->particles_material_uniform_set);
 	}
 	particles->particles_material_uniform_set = RID();
 }
@@ -4688,7 +4688,7 @@ void RendererStorageRD::_particles_allocate_emission_buffer(Particles *particles
 
 	if (RD::get_singleton()->uniform_set_is_valid(particles->particles_material_uniform_set)) {
 		//will need to be re-created
-		RD::get_singleton()->free(particles->particles_material_uniform_set);
+		RD::get_singleton()->free_rid(particles->particles_material_uniform_set);
 		particles->particles_material_uniform_set = RID();
 	}
 }
@@ -4701,7 +4701,7 @@ void RendererStorageRD::particles_set_subemitter(RID p_particles, RID p_subemitt
 	particles->sub_emitter = p_subemitter_particles;
 
 	if (RD::get_singleton()->uniform_set_is_valid(particles->particles_material_uniform_set)) {
-		RD::get_singleton()->free(particles->particles_material_uniform_set);
+		RD::get_singleton()->free_rid(particles->particles_material_uniform_set);
 		particles->particles_material_uniform_set = RID(); //clear and force to re create sub emitting
 	}
 }
@@ -5153,7 +5153,7 @@ void RendererStorageRD::_particles_process(Particles *p_particles, double p_delt
 
 		if (different || !uniform_set_valid) {
 			if (uniform_set_valid) {
-				RD::get_singleton()->free(p_particles->collision_textures_uniform_set);
+				RD::get_singleton()->free_rid(p_particles->collision_textures_uniform_set);
 			}
 
 			Vector<RD::Uniform> uniforms;
@@ -5508,7 +5508,7 @@ void RendererStorageRD::update_particles() {
 			if (uint32_t(trail_steps) != particles->trail_params.size() || particles->frame_params_buffer.is_null()) {
 				particles->trail_params.resize(trail_steps);
 				if (particles->frame_params_buffer.is_valid()) {
-					RD::get_singleton()->free(particles->frame_params_buffer);
+					RD::get_singleton()->free_rid(particles->frame_params_buffer);
 				}
 				particles->frame_params_buffer = RD::get_singleton()->storage_buffer_create(sizeof(ParticlesFrameParams) * trail_steps);
 			}
@@ -5869,7 +5869,7 @@ void RendererStorageRD::particles_collision_set_collision_type(RID p_particles_c
 	}
 
 	if (particles_collision->heightfield_texture.is_valid()) {
-		RD::get_singleton()->free(particles_collision->heightfield_texture);
+		RD::get_singleton()->free_rid(particles_collision->heightfield_texture);
 		particles_collision->heightfield_texture = RID();
 	}
 	particles_collision->type = p_type;
@@ -5944,7 +5944,7 @@ void RendererStorageRD::particles_collision_set_height_field_resolution(RID p_pa
 	particles_collision->heightfield_resolution = p_resolution;
 
 	if (particles_collision->heightfield_texture.is_valid()) {
-		RD::get_singleton()->free(particles_collision->heightfield_texture);
+		RD::get_singleton()->free_rid(particles_collision->heightfield_texture);
 		particles_collision->heightfield_texture = RID();
 	}
 }
@@ -6084,7 +6084,7 @@ void RendererStorageRD::skeleton_allocate_data(RID p_skeleton, int p_bones, bool
 	skeleton->uniform_set_3d = RID();
 
 	if (skeleton->buffer.is_valid()) {
-		RD::get_singleton()->free(skeleton->buffer);
+		RD::get_singleton()->free_rid(skeleton->buffer);
 		skeleton->buffer = RID();
 		skeleton->data.resize(0);
 		skeleton->uniform_set_mi = RID();
@@ -6855,10 +6855,10 @@ void RendererStorageRD::voxel_gi_allocate_data(RID p_voxel_gi, const Transform3D
 	ERR_FAIL_COND(!voxel_gi);
 
 	if (voxel_gi->octree_buffer.is_valid()) {
-		RD::get_singleton()->free(voxel_gi->octree_buffer);
-		RD::get_singleton()->free(voxel_gi->data_buffer);
+		RD::get_singleton()->free_rid(voxel_gi->octree_buffer);
+		RD::get_singleton()->free_rid(voxel_gi->data_buffer);
 		if (voxel_gi->sdf_texture.is_valid()) {
-			RD::get_singleton()->free(voxel_gi->sdf_texture);
+			RD::get_singleton()->free_rid(voxel_gi->sdf_texture);
 		}
 
 		voxel_gi->sdf_texture = RID();
@@ -7353,20 +7353,20 @@ AABB RendererStorageRD::lightmap_get_aabb(RID p_lightmap) const {
 void RendererStorageRD::_clear_render_target(RenderTarget *rt) {
 	//free in reverse dependency order
 	if (rt->framebuffer.is_valid()) {
-		RD::get_singleton()->free(rt->framebuffer);
+		RD::get_singleton()->free_rid(rt->framebuffer);
 		rt->framebuffer_uniform_set = RID(); //chain deleted
 	}
 
 	if (rt->color.is_valid()) {
-		RD::get_singleton()->free(rt->color);
+		RD::get_singleton()->free_rid(rt->color);
 	}
 
 	if (rt->backbuffer.is_valid()) {
-		RD::get_singleton()->free(rt->backbuffer);
+		RD::get_singleton()->free_rid(rt->backbuffer);
 		rt->backbuffer = RID();
 		for (int i = 0; i < rt->backbuffer_mipmaps.size(); i++) {
 			//just erase copies, since the rest are erased by dependency
-			RD::get_singleton()->free(rt->backbuffer_mipmaps[i].mipmap_copy);
+			RD::get_singleton()->free_rid(rt->backbuffer_mipmaps[i].mipmap_copy);
 		}
 		rt->backbuffer_mipmaps.clear();
 		rt->backbuffer_uniform_set = RID(); //chain deleted
@@ -7434,10 +7434,10 @@ void RendererStorageRD::_update_render_target(RenderTarget *rt) {
 
 		//free existing textures
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture)) {
-			RD::get_singleton()->free(tex->rd_texture);
+			RD::get_singleton()->free_rid(tex->rd_texture);
 		}
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture_srgb)) {
-			RD::get_singleton()->free(tex->rd_texture_srgb);
+			RD::get_singleton()->free_rid(tex->rd_texture_srgb);
 		}
 
 		tex->rd_texture = RID();
@@ -7494,7 +7494,7 @@ void RendererStorageRD::_create_render_target_backbuffer(RenderTarget *rt) {
 
 	if (rt->framebuffer_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(rt->framebuffer_uniform_set)) {
 		//the new one will require the backbuffer.
-		RD::get_singleton()->free(rt->framebuffer_uniform_set);
+		RD::get_singleton()->free_rid(rt->framebuffer_uniform_set);
 		rt->framebuffer_uniform_set = RID();
 	}
 	//create mipmaps
@@ -7741,7 +7741,7 @@ RID RendererStorageRD::render_target_get_sdf_texture(RID p_render_target) {
 void RendererStorageRD::_render_target_allocate_sdf(RenderTarget *rt) {
 	ERR_FAIL_COND(rt->sdf_buffer_write_fb.is_valid());
 	if (rt->sdf_buffer_read.is_valid()) {
-		RD::get_singleton()->free(rt->sdf_buffer_read);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_read);
 		rt->sdf_buffer_read = RID();
 	}
 
@@ -7834,13 +7834,13 @@ void RendererStorageRD::_render_target_allocate_sdf(RenderTarget *rt) {
 
 void RendererStorageRD::_render_target_clear_sdf(RenderTarget *rt) {
 	if (rt->sdf_buffer_read.is_valid()) {
-		RD::get_singleton()->free(rt->sdf_buffer_read);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_read);
 		rt->sdf_buffer_read = RID();
 	}
 	if (rt->sdf_buffer_write_fb.is_valid()) {
-		RD::get_singleton()->free(rt->sdf_buffer_write);
-		RD::get_singleton()->free(rt->sdf_buffer_process[0]);
-		RD::get_singleton()->free(rt->sdf_buffer_process[1]);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_write);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_process[0]);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_process[1]);
 		rt->sdf_buffer_write = RID();
 		rt->sdf_buffer_write_fb = RID();
 		rt->sdf_buffer_process[0] = RID();
@@ -8175,7 +8175,7 @@ void RendererStorageRD::_update_decal_atlas() {
 	decal_atlas.dirty = false;
 
 	if (decal_atlas.texture.is_valid()) {
-		RD::get_singleton()->free(decal_atlas.texture);
+		RD::get_singleton()->free_rid(decal_atlas.texture);
 		decal_atlas.texture = RID();
 		decal_atlas.texture_srgb = RID();
 		decal_atlas.texture_mipmaps.clear();
@@ -9066,10 +9066,10 @@ bool RendererStorageRD::free(RID p_rid) {
 
 		if (RD::get_singleton()->texture_is_valid(t->rd_texture_srgb)) {
 			//erase this first, as it's a dependency of the one below
-			RD::get_singleton()->free(t->rd_texture_srgb);
+			RD::get_singleton()->free_rid(t->rd_texture_srgb);
 		}
 		if (RD::get_singleton()->texture_is_valid(t->rd_texture)) {
-			RD::get_singleton()->free(t->rd_texture);
+			RD::get_singleton()->free_rid(t->rd_texture);
 		}
 
 		if (t->is_proxy && t->proxy_to.is_valid()) {
@@ -9194,7 +9194,7 @@ bool RendererStorageRD::free(RID p_rid) {
 		ParticlesCollision *particles_collision = particles_collision_owner.get_or_null(p_rid);
 
 		if (particles_collision->heightfield_texture.is_valid()) {
-			RD::get_singleton()->free(particles_collision->heightfield_texture);
+			RD::get_singleton()->free_rid(particles_collision->heightfield_texture);
 		}
 		particles_collision->dependency.deleted_notify(p_rid);
 		particles_collision_owner.free(p_rid);
@@ -9931,23 +9931,23 @@ RendererStorageRD::~RendererStorageRD() {
 	memdelete_arr(global_variables.buffer_values);
 	memdelete_arr(global_variables.buffer_usage);
 	memdelete_arr(global_variables.buffer_dirty_regions);
-	RD::get_singleton()->free(global_variables.buffer);
+	RD::get_singleton()->free_rid(global_variables.buffer);
 
 	//def textures
 	for (int i = 0; i < DEFAULT_RD_TEXTURE_MAX; i++) {
-		RD::get_singleton()->free(default_rd_textures[i]);
+		RD::get_singleton()->free_rid(default_rd_textures[i]);
 	}
 
 	//def samplers
 	for (int i = 1; i < RS::CANVAS_ITEM_TEXTURE_FILTER_MAX; i++) {
 		for (int j = 1; j < RS::CANVAS_ITEM_TEXTURE_REPEAT_MAX; j++) {
-			RD::get_singleton()->free(default_rd_samplers[i][j]);
+			RD::get_singleton()->free_rid(default_rd_samplers[i][j]);
 		}
 	}
 
 	//def buffers
 	for (int i = 0; i < DEFAULT_RD_BUFFER_MAX; i++) {
-		RD::get_singleton()->free(mesh_default_rd_buffers[i]);
+		RD::get_singleton()->free_rid(mesh_default_rd_buffers[i]);
 	}
 
 	particles_shader.copy_shader.version_free(particles_shader.copy_shader_version);
@@ -9958,14 +9958,14 @@ RendererStorageRD::~RendererStorageRD() {
 	RenderingServer::get_singleton()->free(particles_shader.default_material);
 	RenderingServer::get_singleton()->free(particles_shader.default_shader);
 
-	RD::get_singleton()->free(default_rd_storage_buffer);
+	RD::get_singleton()->free_rid(default_rd_storage_buffer);
 
 	if (decal_atlas.textures.size()) {
 		ERR_PRINT("Decal Atlas: " + itos(decal_atlas.textures.size()) + " textures were not removed from the atlas.");
 	}
 
 	if (decal_atlas.texture.is_valid()) {
-		RD::get_singleton()->free(decal_atlas.texture);
+		RD::get_singleton()->free_rid(decal_atlas.texture);
 	}
 
 	if (effects) {

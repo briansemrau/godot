@@ -1736,7 +1736,7 @@ void EffectsRD::cubemap_filter(RID p_source_cubemap, Vector<RID> p_dest_cubemap,
 		uniforms.push_back(u);
 	}
 	if (RD::get_singleton()->uniform_set_is_valid(filter.image_uniform_set)) {
-		RD::get_singleton()->free(filter.image_uniform_set);
+		RD::get_singleton()->free_rid(filter.image_uniform_set);
 	}
 	filter.image_uniform_set = RD::get_singleton()->uniform_set_create(uniforms, filter.compute_shader.version_get_shader(filter.shader_version, 0), 2);
 
@@ -2511,17 +2511,17 @@ EffectsRD::EffectsRD(bool p_prefer_raster_effects) {
 
 EffectsRD::~EffectsRD() {
 	if (RD::get_singleton()->uniform_set_is_valid(filter.image_uniform_set)) {
-		RD::get_singleton()->free(filter.image_uniform_set);
+		RD::get_singleton()->free_rid(filter.image_uniform_set);
 	}
 
 	if (RD::get_singleton()->uniform_set_is_valid(filter.uniform_set)) {
-		RD::get_singleton()->free(filter.uniform_set);
+		RD::get_singleton()->free_rid(filter.uniform_set);
 	}
 
-	RD::get_singleton()->free(default_sampler);
-	RD::get_singleton()->free(default_mipmap_sampler);
-	RD::get_singleton()->free(index_buffer); //array gets freed as dependency
-	RD::get_singleton()->free(filter.coefficient_buffer);
+	RD::get_singleton()->free_rid(default_sampler);
+	RD::get_singleton()->free_rid(default_mipmap_sampler);
+	RD::get_singleton()->free_rid(index_buffer); //array gets freed as dependency
+	RD::get_singleton()->free_rid(filter.coefficient_buffer);
 
 	if (prefer_raster_effects) {
 		blur_raster.shader.version_free(blur_raster.shader_version);
@@ -2552,9 +2552,9 @@ EffectsRD::~EffectsRD() {
 		ssr_scale.shader.version_free(ssr_scale.shader_version);
 		sss.shader.version_free(sss.shader_version);
 
-		RD::get_singleton()->free(ssao.mirror_sampler);
-		RD::get_singleton()->free(ssao.gather_constants_buffer);
-		RD::get_singleton()->free(ssao.importance_map_load_counter);
+		RD::get_singleton()->free_rid(ssao.mirror_sampler);
+		RD::get_singleton()->free_rid(ssao.gather_constants_buffer);
+		RD::get_singleton()->free_rid(ssao.importance_map_load_counter);
 	}
 	copy_to_fb.shader.version_free(copy_to_fb.shader_version);
 	cube_to_dp.shader.version_free(cube_to_dp.shader_version);

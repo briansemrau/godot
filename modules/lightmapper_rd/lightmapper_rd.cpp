@@ -653,16 +653,16 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 	RID light_environment_tex;
 
 #define FREE_TEXTURES                    \
-	rd->free(albedo_array_tex);          \
-	rd->free(emission_array_tex);        \
-	rd->free(normal_tex);                \
-	rd->free(position_tex);              \
-	rd->free(unocclude_tex);             \
-	rd->free(light_source_tex);          \
-	rd->free(light_accum_tex2);          \
-	rd->free(light_accum_tex);           \
-	rd->free(light_primary_dynamic_tex); \
-	rd->free(light_environment_tex);
+	rd->free_rid(albedo_array_tex);          \
+	rd->free_rid(emission_array_tex);        \
+	rd->free_rid(normal_tex);                \
+	rd->free_rid(position_tex);              \
+	rd->free_rid(unocclude_tex);             \
+	rd->free_rid(light_source_tex);          \
+	rd->free_rid(light_accum_tex2);          \
+	rd->free_rid(light_accum_tex);           \
+	rd->free_rid(light_primary_dynamic_tex); \
+	rd->free_rid(light_environment_tex);
 
 	{ // create all textures
 
@@ -757,13 +757,13 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 	Vector<int> slice_seam_count;
 
 #define FREE_BUFFERS                        \
-	rd->free(vertex_buffer);                \
-	rd->free(triangle_buffer);              \
-	rd->free(lights_buffer);                \
-	rd->free(triangle_cell_indices_buffer); \
-	rd->free(grid_texture);                 \
-	rd->free(seams_buffer);                 \
-	rd->free(probe_positions_buffer);
+	rd->free_rid(vertex_buffer);                \
+	rd->free_rid(triangle_buffer);              \
+	rd->free_rid(lights_buffer);                \
+	rd->free_rid(triangle_cell_indices_buffer); \
+	rd->free_rid(grid_texture);                 \
+	rd->free_rid(seams_buffer);                 \
+	rd->free_rid(probe_positions_buffer);
 
 	_create_acceleration_structures(rd, atlas_size, atlas_slices, bounds, grid_size, probe_positions, p_generate_probes, slice_triangle_count, slice_seam_count, vertex_buffer, triangle_buffer, lights_buffer, triangle_cell_indices_buffer, probe_positions_buffer, grid_texture, seams_buffer, p_step_function, p_bake_userdata);
 
@@ -910,9 +910,9 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 #endif
 
 #define FREE_RASTER_RESOURCES   \
-	rd->free(rasterize_shader); \
-	rd->free(sampler);          \
-	rd->free(raster_depth_buffer);
+	rd->free_rid(rasterize_shader); \
+	rd->free_rid(sampler);          \
+	rd->free_rid(raster_depth_buffer);
 
 	/* Plot direct light */
 
@@ -956,11 +956,11 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 	RID compute_base_uniform_set = rd->uniform_set_create(base_uniforms, compute_shader_primary, 0);
 
 #define FREE_COMPUTE_RESOURCES          \
-	rd->free(compute_shader_unocclude); \
-	rd->free(compute_shader_primary);   \
-	rd->free(compute_shader_secondary); \
-	rd->free(compute_shader_dilate);    \
-	rd->free(compute_shader_light_probes);
+	rd->free_rid(compute_shader_unocclude); \
+	rd->free_rid(compute_shader_primary);   \
+	rd->free_rid(compute_shader_secondary); \
+	rd->free_rid(compute_shader_dilate);    \
+	rd->free_rid(compute_shader_light_probes);
 
 	PushConstant push_constant;
 	{
@@ -1499,8 +1499,8 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 	ERR_FAIL_COND_V(blendseams_triangle_raster_shader.is_null(), BAKE_ERROR_LIGHTMAP_CANT_PRE_BAKE_MESHES);
 
 #define FREE_BLENDSEAMS_RESOURCES            \
-	rd->free(blendseams_line_raster_shader); \
-	rd->free(blendseams_triangle_raster_shader);
+	rd->free_rid(blendseams_line_raster_shader); \
+	rd->free_rid(blendseams_triangle_raster_shader);
 
 	{
 		//pre copy
@@ -1647,7 +1647,7 @@ LightmapperRD::BakeError LightmapperRD::bake(BakeQuality p_quality, bool p_use_d
 		probe_values.resize(probe_positions.size() * 9);
 		Vector<uint8_t> probe_data = rd->buffer_get_data(light_probe_buffer);
 		memcpy(probe_values.ptrw(), probe_data.ptr(), probe_data.size());
-		rd->free(light_probe_buffer);
+		rd->free_rid(light_probe_buffer);
 
 #ifdef DEBUG_TEXTURES
 		{

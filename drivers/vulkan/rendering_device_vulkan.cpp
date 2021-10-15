@@ -148,7 +148,7 @@ void RenderingDeviceVulkan::_free_dependencies(RID p_id) {
 	Map<RID, Set<RID>>::Element *E = dependency_map.find(p_id);
 	if (E) {
 		while (E->get().size()) {
-			free(E->get().front()->get());
+			free_rid(E->get().front()->get());
 		}
 		dependency_map.erase(E);
 	}
@@ -8437,7 +8437,7 @@ void RenderingDeviceVulkan::_free_internal(RID p_id) {
 	}
 }
 
-void RenderingDeviceVulkan::free(RID p_id) {
+void RenderingDeviceVulkan::free_rid(RID p_id) {
 	_THREAD_SAFE_METHOD_
 
 	_free_dependencies(p_id); //recursively erase dependencies first, to avoid potential API problems
@@ -8962,7 +8962,7 @@ void RenderingDeviceVulkan::_free_rids(T &p_owner, const char *p_type) {
 			WARN_PRINT(vformat("%d RIDs of type \"%s\" were leaked.", owned.size(), p_type));
 		}
 		for (const RID &E : owned) {
-			free(E);
+			free_rid(E);
 		}
 	}
 }
@@ -9269,14 +9269,14 @@ void RenderingDeviceVulkan::finalize() {
 			for (List<RID>::Element *E = owned.front(); E;) {
 				List<RID>::Element *N = E->next();
 				if (texture_is_shared(E->get())) {
-					free(E->get());
+					free_rid(E->get());
 					owned.erase(E);
 				}
 				E = N;
 			}
 			//free non shared second, this will avoid an error trying to free unexisting textures due to dependencies.
 			for (const RID &E : owned) {
-				free(E);
+				free_rid(E);
 			}
 		}
 	}

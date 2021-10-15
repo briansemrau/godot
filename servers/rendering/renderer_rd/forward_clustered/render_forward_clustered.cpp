@@ -131,11 +131,11 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::ensure_voxelgi() 
 
 void RenderForwardClustered::RenderBufferDataForwardClustered::clear() {
 	if (voxelgi_buffer != RID()) {
-		RD::get_singleton()->free(voxelgi_buffer);
+		RD::get_singleton()->free_rid(voxelgi_buffer);
 		voxelgi_buffer = RID();
 
 		if (voxelgi_buffer_msaa.is_valid()) {
-			RD::get_singleton()->free(voxelgi_buffer_msaa);
+			RD::get_singleton()->free_rid(voxelgi_buffer_msaa);
 			voxelgi_buffer_msaa = RID();
 		}
 
@@ -143,21 +143,21 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::clear() {
 	}
 
 	if (color_msaa.is_valid()) {
-		RD::get_singleton()->free(color_msaa);
+		RD::get_singleton()->free_rid(color_msaa);
 		color_msaa = RID();
 	}
 
 	if (depth_msaa.is_valid()) {
-		RD::get_singleton()->free(depth_msaa);
+		RD::get_singleton()->free_rid(depth_msaa);
 		depth_msaa = RID();
 	}
 
 	if (specular.is_valid()) {
 		if (specular_msaa.is_valid()) {
-			RD::get_singleton()->free(specular_msaa);
+			RD::get_singleton()->free_rid(specular_msaa);
 			specular_msaa = RID();
 		}
-		RD::get_singleton()->free(specular);
+		RD::get_singleton()->free_rid(specular);
 		specular = RID();
 	}
 
@@ -169,9 +169,9 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::clear() {
 	depth_fb = RID();
 
 	if (normal_roughness_buffer.is_valid()) {
-		RD::get_singleton()->free(normal_roughness_buffer);
+		RD::get_singleton()->free_rid(normal_roughness_buffer);
 		if (normal_roughness_buffer_msaa.is_valid()) {
-			RD::get_singleton()->free(normal_roughness_buffer_msaa);
+			RD::get_singleton()->free_rid(normal_roughness_buffer_msaa);
 			normal_roughness_buffer_msaa = RID();
 		}
 		normal_roughness_buffer = RID();
@@ -179,7 +179,7 @@ void RenderForwardClustered::RenderBufferDataForwardClustered::clear() {
 	}
 
 	if (!render_sdfgi_uniform_set.is_null() && RD::get_singleton()->uniform_set_is_valid(render_sdfgi_uniform_set)) {
-		RD::get_singleton()->free(render_sdfgi_uniform_set);
+		RD::get_singleton()->free_rid(render_sdfgi_uniform_set);
 	}
 }
 
@@ -805,7 +805,7 @@ void RenderForwardClustered::_update_instance_data_buffer(RenderListType p_rende
 	if (scene_state.instance_data[p_render_list].size() > 0) {
 		if (scene_state.instance_buffer[p_render_list] == RID() || scene_state.instance_buffer_size[p_render_list] < scene_state.instance_data[p_render_list].size()) {
 			if (scene_state.instance_buffer[p_render_list] != RID()) {
-				RD::get_singleton()->free(scene_state.instance_buffer[p_render_list]);
+				RD::get_singleton()->free_rid(scene_state.instance_buffer[p_render_list]);
 			}
 			uint32_t new_size = nearest_power_of_2_templated(MAX(uint64_t(INSTANCE_DATA_BUFFER_MIN_SIZE), scene_state.instance_data[p_render_list].size()));
 			scene_state.instance_buffer[p_render_list] = RD::get_singleton()->storage_buffer_create(new_size * sizeof(SceneState::InstanceData));
@@ -1898,7 +1898,7 @@ void RenderForwardClustered::_render_sdfgi(RID p_render_buffers, const Vector3i 
 
 void RenderForwardClustered::_base_uniforms_changed() {
 	if (!render_base_uniform_set.is_null() && RD::get_singleton()->uniform_set_is_valid(render_base_uniform_set)) {
-		RD::get_singleton()->free(render_base_uniform_set);
+		RD::get_singleton()->free_rid(render_base_uniform_set);
 	}
 	render_base_uniform_set = RID();
 }
@@ -1906,7 +1906,7 @@ void RenderForwardClustered::_base_uniforms_changed() {
 void RenderForwardClustered::_update_render_base_uniform_set() {
 	if (render_base_uniform_set.is_null() || !RD::get_singleton()->uniform_set_is_valid(render_base_uniform_set) || (lightmap_texture_array_version != storage->lightmap_array_get_version())) {
 		if (render_base_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(render_base_uniform_set)) {
-			RD::get_singleton()->free(render_base_uniform_set);
+			RD::get_singleton()->free_rid(render_base_uniform_set);
 		}
 
 		lightmap_texture_array_version = storage->lightmap_array_get_version();
@@ -2327,7 +2327,7 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 	}
 
 	if (render_pass_uniform_sets[p_index].is_valid() && RD::get_singleton()->uniform_set_is_valid(render_pass_uniform_sets[p_index])) {
-		RD::get_singleton()->free(render_pass_uniform_sets[p_index]);
+		RD::get_singleton()->free_rid(render_pass_uniform_sets[p_index]);
 	}
 
 	render_pass_uniform_sets[p_index] = RD::get_singleton()->uniform_set_create(uniforms, scene_shader.default_shader_rd, RENDER_PASS_UNIFORM_SET);
@@ -2336,7 +2336,7 @@ RID RenderForwardClustered::_setup_render_pass_uniform_set(RenderListType p_rend
 
 RID RenderForwardClustered::_setup_sdfgi_render_pass_uniform_set(RID p_albedo_texture, RID p_emission_texture, RID p_emission_aniso_texture, RID p_geom_facing_texture) {
 	if (sdfgi_pass_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(sdfgi_pass_uniform_set)) {
-		RD::get_singleton()->free(sdfgi_pass_uniform_set);
+		RD::get_singleton()->free_rid(sdfgi_pass_uniform_set);
 	}
 
 	Vector<RD::Uniform> uniforms;
@@ -3086,30 +3086,30 @@ RenderForwardClustered::~RenderForwardClustered() {
 	//clear base uniform set if still valid
 	for (uint32_t i = 0; i < render_pass_uniform_sets.size(); i++) {
 		if (render_pass_uniform_sets[i].is_valid() && RD::get_singleton()->uniform_set_is_valid(render_pass_uniform_sets[i])) {
-			RD::get_singleton()->free(render_pass_uniform_sets[i]);
+			RD::get_singleton()->free_rid(render_pass_uniform_sets[i]);
 		}
 	}
 
 	if (sdfgi_pass_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(sdfgi_pass_uniform_set)) {
-		RD::get_singleton()->free(sdfgi_pass_uniform_set);
+		RD::get_singleton()->free_rid(sdfgi_pass_uniform_set);
 	}
 
 	{
 		for (uint32_t i = 0; i < scene_state.uniform_buffers.size(); i++) {
-			RD::get_singleton()->free(scene_state.uniform_buffers[i]);
+			RD::get_singleton()->free_rid(scene_state.uniform_buffers[i]);
 		}
-		RD::get_singleton()->free(scene_state.lightmap_buffer);
-		RD::get_singleton()->free(scene_state.lightmap_capture_buffer);
+		RD::get_singleton()->free_rid(scene_state.lightmap_buffer);
+		RD::get_singleton()->free_rid(scene_state.lightmap_capture_buffer);
 		for (uint32_t i = 0; i < RENDER_LIST_MAX; i++) {
 			if (scene_state.instance_buffer[i] != RID()) {
-				RD::get_singleton()->free(scene_state.instance_buffer[i]);
+				RD::get_singleton()->free_rid(scene_state.instance_buffer[i]);
 			}
 		}
 		memdelete_arr(scene_state.lightmap_captures);
 	}
 
 	while (sdfgi_framebuffer_size_cache.front()) {
-		RD::get_singleton()->free(sdfgi_framebuffer_size_cache.front()->get());
+		RD::get_singleton()->free_rid(sdfgi_framebuffer_size_cache.front()->get());
 		sdfgi_framebuffer_size_cache.erase(sdfgi_framebuffer_size_cache.front());
 	}
 }
